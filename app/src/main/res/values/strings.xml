@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Pie Chart Generator</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">cancel</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="show_percentage">Show Percentage</string>
+</resources>
