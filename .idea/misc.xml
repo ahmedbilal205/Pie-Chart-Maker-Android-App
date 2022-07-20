@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Android_projects/PieChartGenerator2/app/src/main/res/layout/activity_main.xml" value="0.25" />
+        <entry key="..\:/Android_projects/PieChartGenerator2/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.203" />
+        <entry key="..\:/PieChartGenerator2/app/src/main/res/layout/activity_main.xml" value="0.25" />
+      </map>
+    </option>
+  </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="org.jetbrains.annotations.Nullable" />
     <option name="myDefaultNotNull" value="androidx.annotation.NonNull" />

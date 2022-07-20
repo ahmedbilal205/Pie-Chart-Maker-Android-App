@@ -47,7 +47,7 @@ import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 
-public class photoFragment extends Fragment {
+public class PhotoFragment extends Fragment {
 
     private photoFragmentListener listener;
 
@@ -95,7 +95,7 @@ public class photoFragment extends Fragment {
         cancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                requireActivity().getSupportFragmentManager().beginTransaction().remove(photoFragment.this).commit();
+                requireActivity().getSupportFragmentManager().beginTransaction().remove(PhotoFragment.this).commit();
             }
         });
 
@@ -205,9 +205,6 @@ public class photoFragment extends Fragment {
             //new DownloadsImage().execute(ImageUrl);
             }
     }
-
-
-
     private boolean isNetworkAvailable()
     {
         ConnectivityManager connectivityManager

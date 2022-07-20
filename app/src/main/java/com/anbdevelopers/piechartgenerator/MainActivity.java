@@ -21,8 +21,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.common.base.Joiner;
 import com.squareup.picasso.Picasso;
 
@@ -31,23 +29,21 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     Boolean showPercentage=false;
-    photoFragment photoFragment;
+    PhotoFragment photoFragment;
     ImageView imageView ;
     EditText titleEditText;
     String finalUrl;
     Button chkBtn;
     ImageButton addEntry;
     RecyclerView recyclerView;
-    recyclerViewAdapter recyclerViewAdapter;
+    RecyclerViewAdapter recyclerViewAdapter;
     String graphURL;
     ArrayList<String> allLabelArr=new ArrayList<>();
     ArrayList<String> allLabelArrNoPer = new ArrayList<>();
     ArrayList<String> allValueArr=new ArrayList<>();
     ArrayList<String> allColorCodeArr = new ArrayList<>();
-    final dataListApi dataListApiObject= com.anbdevelopers.piechartgenerator.dataListApi.getInstance();
+    final DataListApi dataListApiObject= DataListApi.getInstance();
     //AdView adView;
-
-
 
     @Override
     public void onBackPressed() {
@@ -69,10 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
         //ad code starts here
         AdView mAdView;
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-            }
+        MobileAds.initialize(this, initializationStatus -> {
         });
 
         mAdView = findViewById(R.id.adView);
@@ -85,18 +78,18 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Adding empty and default blue color
-        dataListApiObject.addElement(new dataList("","","51ace3"));
+        dataListApiObject.addElement(new DataList("","","51ace3"));
 
         recyclerView=findViewById(R.id.recyclerView1);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdapter=new recyclerViewAdapter(MainActivity.this,dataListApiObject.getdataListApi());
+        recyclerViewAdapter=new RecyclerViewAdapter(MainActivity.this,dataListApiObject.getdataListApi());
         recyclerView.setAdapter(recyclerViewAdapter);
 
         addEntry.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               dataListApiObject.addElement(new dataList("","","51ace3"));
+               dataListApiObject.addElement(new DataList("","","51ace3"));
                 //recyclerViewAdapter.notifyItemInserted(dataListApiObject.getdataListApi().size());
                 recyclerViewAdapter.notifyDataSetChanged();
             }
@@ -109,15 +102,11 @@ public class MainActivity extends AppCompatActivity {
         imageView.setOnClickListener(view -> {
             Bundle bundle = new Bundle();
             bundle.putString("urlkey",finalUrl);
-            photoFragment=new photoFragment();
+            photoFragment=new PhotoFragment();
             photoFragment.setArguments(bundle);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.photoFragment,photoFragment)
                     .commit();
-//                    Toast.makeText(MainActivity.this,
-//                            "The favorite list would appear on clicking this icon",
-//                            Toast.LENGTH_LONG).show();
-
         });
     }
 
@@ -142,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         }
         recyclerViewAdapter.notifyDataSetChanged();
 
-        finalUrl = makefinalUrl();
+        finalUrl = makeFinalUrl();
         Log.d("finalUrl", "onClick: "+finalUrl);
         Picasso.get()
                 .load(finalUrl)
@@ -151,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 .into(imageView);
     }
 
-    private String makefinalUrl() {
+    private String makeFinalUrl() {
         String title;
         String values;
         String labels;

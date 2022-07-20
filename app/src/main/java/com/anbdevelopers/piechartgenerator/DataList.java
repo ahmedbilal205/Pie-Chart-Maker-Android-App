@@ -1,14 +1,11 @@
 package com.anbdevelopers.piechartgenerator;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class dataList {
+public class DataList {
    public String labelText;
    public String value;
    public String colorCode;
 
-    public dataList() {
+    public DataList() {
     }
 
     public String getLabelText() {
@@ -35,7 +32,7 @@ public class dataList {
         this.colorCode = colorCode;
     }
 
-    public dataList(String labelText, String value, String colorCode) {
+    public DataList(String labelText, String value, String colorCode) {
         this.labelText = labelText;
         this.value = value;
         this.colorCode = colorCode;

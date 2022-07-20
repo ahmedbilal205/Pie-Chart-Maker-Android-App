@@ -7,7 +7,7 @@
     android:background="#000000"
     android:clickable="true"
     android:focusable="true"
-    tools:context=".photoFragment">
+    tools:context=".PhotoFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

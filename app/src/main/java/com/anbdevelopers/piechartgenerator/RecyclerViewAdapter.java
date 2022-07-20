@@ -26,11 +26,11 @@ import java.util.List;
 
 import static com.anbdevelopers.piechartgenerator.R.id.LabelTextRecycler;
 
-public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapter.ViewHolder>{
+public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
     private Context context;
-    private List<dataList> dlList;
+    private List<DataList> dlList;
 
-    public recyclerViewAdapter(Context context, List<dataList> dlList) {
+    public RecyclerViewAdapter(Context context, List<DataList> dlList) {
         this.context = context;
         this.dlList = dlList;
     }
@@ -48,7 +48,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        dataList dataList=dlList.get(position);
+        DataList dataList=dlList.get(position);
         holder.LabelText.setText(dataList.getLabelText());
         holder.valueText.setText(dataList.getValue());
         holder.colorpicker.setBackgroundColor(Color.parseColor("#"+dataList.getColorCode()));
@@ -93,8 +93,8 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
                 @Override
                 public void afterTextChanged(Editable editable) {
                    // Log.d("textchanged", "afterTextChanged: " +valueText.getText().toString());
-                    dataListApi dataListApi= com.anbdevelopers.piechartgenerator.dataListApi.getInstance();
-                    dataList dataListValueText;
+                    DataListApi dataListApi= DataListApi.getInstance();
+                    DataList dataListValueText;
                     dataListValueText=dataListApi.getdataListApi().get(getAdapterPosition());
                     dataListValueText.value=valueText.getText().toString().trim();
                     dataListApi.getdataListApi().set(getAdapterPosition(),dataListValueText);
@@ -119,8 +119,8 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
                 @Override
                 public void afterTextChanged(Editable editable) {
                     //Log.d("textchanged", "afterTextChanged: " +LabelText.getText().toString());
-                    dataListApi dataListApi= com.anbdevelopers.piechartgenerator.dataListApi.getInstance();
-                    dataList dataListLabelText;
+                    DataListApi dataListApi= DataListApi.getInstance();
+                    DataList dataListLabelText;
                     dataListLabelText=dataListApi.getdataListApi().get(getAdapterPosition());
                     dataListLabelText.labelText=LabelText.getText().toString().trim();
                     dataListApi.getdataListApi().set(getAdapterPosition(),dataListLabelText);
@@ -139,7 +139,7 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
             int position=getAdapterPosition();
             switch (view.getId()){
                 case R.id.deleteEntryBtn1:
-                    dataListApi dataListApi= com.anbdevelopers.piechartgenerator.dataListApi.getInstance();
+                    DataListApi dataListApi= DataListApi.getInstance();
                     dataListApi.removeElement(position);
                     Log.d("removeItem", "onClick: positoion of adapter"+ position);
                     for (int i=0;i<dataListApi.getdataListApi().size();i++){
@@ -171,8 +171,8 @@ public class recyclerViewAdapter extends RecyclerView.Adapter<recyclerViewAdapte
                                     String formattedHex=unformattedHex.substring(2);
                                     //Log.d("libc", "onColorSelected: formatted #"+formattedHex);
                                     colorpicker.setBackgroundColor(Color.parseColor("#"+formattedHex));
-                                    dataListApi dataListApi= com.anbdevelopers.piechartgenerator.dataListApi.getInstance();
-                                    dataList dataListColorCode = dataListApi.getdataListApi().get(position);
+                                    DataListApi dataListApi= DataListApi.getInstance();
+                                    DataList dataListColorCode = dataListApi.getdataListApi().get(position);
                                     dataListColorCode.colorCode=formattedHex;
                                     dataListApi.getdataListApi().set(position,dataListColorCode);
                                   //  Log.d("finalCheck", "value "+dataListApi.getElement(position).value+
