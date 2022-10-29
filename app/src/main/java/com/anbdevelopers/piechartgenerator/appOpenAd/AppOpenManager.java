@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
 import androidx.lifecycle.ProcessLifecycleOwner;
 
+import com.anbdevelopers.piechartgenerator.Admob;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -25,7 +26,6 @@ import java.util.Date;
 public class AppOpenManager implements LifecycleObserver, Application.ActivityLifecycleCallbacks{
     private Activity currentActivity;
     private static final String LOG_TAG = "AppOpenManager";
-    private static final String AD_UNIT_ID = "ca-app-pub-1067149317863301/8144669354";
     private AppOpenAd appOpenAd = null;
     private static boolean isShowingAd = false;
     private AppOpenAd.AppOpenAdLoadCallback loadCallback;
@@ -106,7 +106,7 @@ public class AppOpenManager implements LifecycleObserver, Application.ActivityLi
                 };
         AdRequest request = getAdRequest();
         AppOpenAd.load(
-                myApplication, AD_UNIT_ID, request,
+                myApplication, Admob.APP_OPEN_ID, request,
                 AppOpenAd.APP_OPEN_AD_ORIENTATION_PORTRAIT, loadCallback);
     }
 

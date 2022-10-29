@@ -2,13 +2,15 @@ package com.anbdevelopers.piechartgenerator;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -19,12 +21,15 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.RequestConfiguration;
 import com.google.common.base.Joiner;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,39 +48,22 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> allValueArr=new ArrayList<>();
     ArrayList<String> allColorCodeArr = new ArrayList<>();
     final DataListApi dataListApiObject= DataListApi.getInstance();
-    //AdView adView;
 
-    @Override
-    public void onBackPressed() {
-        if (photoFragment!=null)
-        {
-            if (photoFragment.isVisible())
-            {
-                getSupportFragmentManager().beginTransaction().remove(photoFragment).commit();
-            }else super.onBackPressed();
-        }
-        else super.onBackPressed();
-    }
-
+    AdView adView;
+    private FrameLayout adContainerView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         addEntry=findViewById(R.id.add_entry);
-
-        //ad code starts here
-        AdView mAdView;
-        MobileAds.initialize(this, initializationStatus -> {
-        });
-
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
-         //MediationTestSuite.launch(MainActivity.this);
         imageView=findViewById(R.id.imageView);
-        imageView.setClickable(true);
         titleEditText=findViewById(R.id.titleEditText);
+        chkBtn=findViewById(R.id.refreshBtn);
 
+        initAds();
+
+        imageView.setClickable(true);
+        chkBtn.setOnClickListener(view -> refreshChart());
 
         //Adding empty and default blue color
         dataListApiObject.addElement(new DataList("","","51ace3"));
@@ -83,21 +71,13 @@ public class MainActivity extends AppCompatActivity {
         recyclerView=findViewById(R.id.recyclerView1);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerViewAdapter=new RecyclerViewAdapter(MainActivity.this,dataListApiObject.getdataListApi());
+        recyclerViewAdapter=new RecyclerViewAdapter(MainActivity.this,dataListApiObject.getDataListApi());
         recyclerView.setAdapter(recyclerViewAdapter);
 
-        addEntry.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-               dataListApiObject.addElement(new DataList("","","51ace3"));
-                //recyclerViewAdapter.notifyItemInserted(dataListApiObject.getdataListApi().size());
-                recyclerViewAdapter.notifyDataSetChanged();
-            }
+        addEntry.setOnClickListener(view -> {
+           dataListApiObject.addElement(new DataList("","","51ace3"));
+            recyclerViewAdapter.notifyDataSetChanged();
         });
-       // mainDataListArr=dataListApiObject.getdataListApi();
-
-        chkBtn=findViewById(R.id.refreshBtn);
-        chkBtn.setOnClickListener(view -> refreshChart());
 
         imageView.setOnClickListener(view -> {
             Bundle bundle = new Bundle();
@@ -110,21 +90,68 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void initAds() {
+        MobileAds.initialize(this, initializationStatus -> {
+        });
+        MobileAds.setRequestConfiguration(
+                new RequestConfiguration.Builder().
+                        setTestDeviceIds(Arrays.asList("880b7af9-f4fb-4aab-af2b-8233e5380503")).build());
+        adContainerView = findViewById(R.id.adView);
+        adContainerView.post(new Runnable() {
+            @Override
+            public void run() {
+                loadBanner();
+            }
+        });
+
+        //MediationTestSuite.launch(MainActivity.this);
+    }
+
+    private void loadBanner()
+    {
+        adView = new AdView(this);
+        adView.setAdUnitId(Admob.BANNER_ID);
+        adContainerView.removeAllViews();
+        adContainerView.addView(adView);
+
+        AdSize adSize = getAdSize();
+        adView.setAdSize(adSize);
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
+    }
+    private AdSize getAdSize() {
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float density = outMetrics.density;
+
+        float adWidthPixels = adContainerView.getWidth();
+
+        // If the ad hasn't been laid out, default to the full screen width.
+        if (adWidthPixels == 0) {
+            adWidthPixels = outMetrics.widthPixels;
+        }
+
+        int adWidth = (int) (adWidthPixels / density);
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
     private void refreshChart() {
         allValueArr.clear();
         allLabelArr.clear();
         allColorCodeArr.clear();
         allLabelArrNoPer.clear();
-        for (int i=0;i<dataListApiObject.getdataListApi().size();i++){
+        for (int i = 0; i<dataListApiObject.getDataListApi().size(); i++){
 
-            if (!dataListApiObject.getdataListApi().get(i).labelText.isEmpty()
-                    &&!dataListApiObject.getdataListApi().get(i).value.isEmpty()
-                    &&!dataListApiObject.getdataListApi().get(i).colorCode.isEmpty()){
+            if (!dataListApiObject.getDataListApi().get(i).labelText.isEmpty()
+                    &&!dataListApiObject.getDataListApi().get(i).value.isEmpty()
+                    &&!dataListApiObject.getDataListApi().get(i).colorCode.isEmpty()){
 
-            allLabelArr.add(dataListApiObject.getdataListApi().get(i).labelText+"\\n"+dataListApiObject.getdataListApi().get(i).value+"%");
-            allLabelArrNoPer.add(dataListApiObject.getdataListApi().get(i).labelText);
-            allValueArr.add(dataListApiObject.getdataListApi().get(i).value);
-            allColorCodeArr.add(dataListApiObject.getdataListApi().get(i).colorCode);}
+            allLabelArr.add(dataListApiObject.getDataListApi().get(i).labelText+"\\n"+dataListApiObject.getDataListApi().get(i).value+"%");
+            allLabelArrNoPer.add(dataListApiObject.getDataListApi().get(i).labelText);
+            allValueArr.add(dataListApiObject.getDataListApi().get(i).value);
+            allColorCodeArr.add(dataListApiObject.getDataListApi().get(i).colorCode);}
             else {
                 Toast.makeText(MainActivity.this, "Empty fields not allowed\nFill or delete empty slots to get correct output", Toast.LENGTH_LONG).show();
             }
@@ -163,16 +190,6 @@ public class MainActivity extends AppCompatActivity {
         }
            lablesTop=Joiner.on("|").join(lablestopArr);
 
-//        Log.d("allValues", "Values "+values);
-//        Log.d("allValues", "makefinalUrl: "+labels);
-//        Log.d("allValues", "makefinalUrl: "+colorcodes);
-
-
-//        Log.d("allValues", "check sb "+values);
-//                for (int i=0;i<allValueArr.size();i++){
-//                    Log.d("allValues", "check arr: "+allValueArr.get(i));
-//        }
-
 
         String graphUrlNoPercent="https://image-charts.com/chart?" +
                 "cht=p" +
@@ -197,8 +214,6 @@ public class MainActivity extends AppCompatActivity {
                 "&chlps=font.size,27"+
                 "&chtt="+title+
                 "&chts=000000,28";
-
-        //Log.d("allValues", "makefinalUrl: "+graphURL);
 
         if (showPercentage){
             return graphURL;
@@ -228,4 +243,39 @@ public class MainActivity extends AppCompatActivity {
                 break;}
         return super.onOptionsItemSelected(item);
     }
+
+
+    @Override
+    public void onBackPressed() {
+        if (photoFragment!=null)
+        {
+            if (photoFragment.isVisible())
+            {
+                getSupportFragmentManager().beginTransaction().remove(photoFragment).commit();
+            }else super.onBackPressed();
+        }
+        else super.onBackPressed();
+    }
+    @Override
+    protected void onPause() {
+        if (adView != null) {
+            adView.pause();
+        }
+        super.onPause();
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (adView != null) {
+            adView.resume();
+        }
+    }
+    @Override
+    public void onDestroy() {
+        if (adView != null) {
+            adView.destroy();
+        }
+        super.onDestroy();
+    }
+
 }

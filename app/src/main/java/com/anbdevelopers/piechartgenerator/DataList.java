@@ -5,8 +5,7 @@ public class DataList {
    public String value;
    public String colorCode;
 
-    public DataList() {
-    }
+    public DataList() {}
 
     public String getLabelText() {
         return labelText;

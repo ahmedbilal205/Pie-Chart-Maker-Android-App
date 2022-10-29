@@ -1,12 +1,12 @@
 package com.anbdevelopers.piechartgenerator;
 
+import static com.anbdevelopers.piechartgenerator.R.id.LabelTextRecycler;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +18,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.skydoves.colorpickerview.ColorEnvelope;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 
 import java.util.List;
-
-import static com.anbdevelopers.piechartgenerator.R.id.LabelTextRecycler;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
     private Context context;
@@ -52,7 +49,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.LabelText.setText(dataList.getLabelText());
         holder.valueText.setText(dataList.getValue());
         holder.colorpicker.setBackgroundColor(Color.parseColor("#"+dataList.getColorCode()));
-
     }
 
 
@@ -81,24 +77,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             valueText.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
                 @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-                   // Log.d("textchanged", "afterTextChanged: " +valueText.getText().toString());
                     DataListApi dataListApi= DataListApi.getInstance();
                     DataList dataListValueText;
-                    dataListValueText=dataListApi.getdataListApi().get(getAdapterPosition());
+                    dataListValueText=dataListApi.getDataListApi().get(getAdapterPosition());
                     dataListValueText.value=valueText.getText().toString().trim();
-                    dataListApi.getdataListApi().set(getAdapterPosition(),dataListValueText);
-                   // Log.d("testingTextwatcher", "afterTextChanged: "+ dataListApi.getdataListApi().get(getAdapterPosition()).value +"\n"+getAdapterPosition());
+                    dataListApi.getDataListApi().set(getAdapterPosition(),dataListValueText);
                     int i=getAdapterPosition()+1;
                     getIndex.setText(String.format("%d", i));
                 }
@@ -106,28 +96,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             LabelText.addTextChangedListener(new TextWatcher() {
                 @Override
-                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                }
+                public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
                 @Override
-                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                   // Log.d("textchanged", "from On afterTextChanged: +" +LabelText.getText().toString());
-
-                }
+                public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {}
 
                 @Override
                 public void afterTextChanged(Editable editable) {
-                    //Log.d("textchanged", "afterTextChanged: " +LabelText.getText().toString());
                     DataListApi dataListApi= DataListApi.getInstance();
                     DataList dataListLabelText;
-                    dataListLabelText=dataListApi.getdataListApi().get(getAdapterPosition());
+                    dataListLabelText=dataListApi.getDataListApi().get(getAdapterPosition());
                     dataListLabelText.labelText=LabelText.getText().toString().trim();
-                    dataListApi.getdataListApi().set(getAdapterPosition(),dataListLabelText);
-                    String x = dataListApi.getdataListApi().get(getAdapterPosition()).labelText;
-
-
-                   // Log.d("testingTextwatcher", "afterTextChanged: "+ x +"\n"+getAdapterPosition());
+                    dataListApi.getDataListApi().set(getAdapterPosition(),dataListLabelText);
+                    String x = dataListApi.getDataListApi().get(getAdapterPosition()).labelText;
 
                 }
             });
@@ -141,53 +122,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 case R.id.deleteEntryBtn1:
                     DataListApi dataListApi= DataListApi.getInstance();
                     dataListApi.removeElement(position);
-                    Log.d("removeItem", "onClick: positoion of adapter"+ position);
-                    for (int i=0;i<dataListApi.getdataListApi().size();i++){
-                        Log.d("removeItem", "arraylist data: "+dataListApi.getdataListApi().get(i).getLabelText());
-                    }
-
                     notifyItemRemoved(position);
-
                     break;
                 case R.id.colorpickerButton:
-                    openColorpickerDialog(position);
-
-
+                    openColorPickerDialog(position);
             }
 
         }
 
-        private void openColorpickerDialog(final int position) {
+        private void openColorPickerDialog(final int position) {
             new ColorPickerDialog.Builder(context)
                     .setTitle("ColorPicker Dialog")
                     .setPreferenceName("MyColorPickerDialog")
                     .setPositiveButton((R.string.confirm),
-                            new ColorEnvelopeListener() {
-                                @Override
-                                public void onColorSelected(ColorEnvelope envelope, boolean fromUser) {
-                                  //  setLayoutColor(envelope);
-                                   // Log.d("libc", "onColorSelected: #"+envelope.getHexCode());
-                                    String unformattedHex=envelope.getHexCode();
-                                    String formattedHex=unformattedHex.substring(2);
-                                    //Log.d("libc", "onColorSelected: formatted #"+formattedHex);
-                                    colorpicker.setBackgroundColor(Color.parseColor("#"+formattedHex));
-                                    DataListApi dataListApi= DataListApi.getInstance();
-                                    DataList dataListColorCode = dataListApi.getdataListApi().get(position);
-                                    dataListColorCode.colorCode=formattedHex;
-                                    dataListApi.getdataListApi().set(position,dataListColorCode);
-                                  //  Log.d("finalCheck", "value "+dataListApi.getElement(position).value+
-                                    //        "\nLabel "+dataListApi.getElement(position).labelText
-                                   // +"\nColor code "+dataListApi.getElement(position).colorCode);
-
-                                }
+                            (ColorEnvelopeListener) (envelope, fromUser) -> {
+                                String unformattedHex=envelope.getHexCode();
+                                String formattedHex=unformattedHex.substring(2);
+                                colorpicker.setBackgroundColor(Color.parseColor("#"+formattedHex));
+                                DataListApi dataListApi= DataListApi.getInstance();
+                                DataList dataListColorCode = dataListApi.getDataListApi().get(position);
+                                dataListColorCode.colorCode=formattedHex;
+                                dataListApi.getDataListApi().set(position,dataListColorCode);
                             })
                     .setNegativeButton((R.string.cancel),
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    dialogInterface.dismiss();
-                                }
-                            })
+                            (dialogInterface, i) -> dialogInterface.dismiss())
                     .attachAlphaSlideBar(false) // the default value is true.
                     .attachBrightnessSlideBar(false)  // the default value is true.
                     .setBottomSpace(10) // set a bottom space between the last slidebar and buttons.

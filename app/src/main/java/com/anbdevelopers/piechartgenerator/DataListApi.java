@@ -20,7 +20,7 @@ public class DataListApi {
     public void removeElement(int position){
         dataListArrayListApi.remove(position);
     }
-    public ArrayList<DataList> getdataListApi(){
+    public ArrayList<DataList> getDataListApi(){
         return dataListArrayListApi;
    }
     public DataList getElement(int position){
