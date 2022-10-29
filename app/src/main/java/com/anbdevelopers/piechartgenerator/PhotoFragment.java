@@ -62,8 +62,6 @@ public class PhotoFragment extends Fragment {
     ImageButton cancelBtn;
     static ZoomageView zoomageView;
     Context context;
-    //BitmapDrawable drawable;
-   // Bitmap bitmap;
     public static final int PERMISSION_WRITE = 0;
     ProgressDialog progressDialog;
 
@@ -92,40 +90,26 @@ public class PhotoFragment extends Fragment {
                 .into(zoomageView);
 
 
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                requireActivity().getSupportFragmentManager().beginTransaction().remove(PhotoFragment.this).commit();
+        cancelBtn.setOnClickListener(view ->
+                requireActivity().getSupportFragmentManager().beginTransaction().remove(PhotoFragment.this).commit());
+
+        copyUrlBtn.setOnClickListener(view -> {
+            if (url != null) {
+                setClipboard(requireContext(),url);
+                Toast.makeText(getContext(), "Image Url copied to Clipboard", Toast.LENGTH_LONG).show();
             }
+            else Toast.makeText(getContext(), "Failed to copy Url", Toast.LENGTH_SHORT).show();
         });
 
-        copyUrlBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
+        saveBtn.setOnClickListener(view -> {
+            if (url!=null&&isNetworkAvailable())
             {
-                if (url != null) {
-                    setClipboard(requireContext(),url);
-                    Toast.makeText(getContext(), "Image Url copied to Clipboard", Toast.LENGTH_LONG).show();
-                }
-                else Toast.makeText(getContext(), "Failed to copy Url", Toast.LENGTH_SHORT).show();
-
+            DownloadImage(url);
             }
-        });
-
-        saveBtn.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                if (url!=null&&isNetworkAvailable())
+            else
                 {
-                DownloadImage(url);
+                Toast.makeText(getContext(), "Not valid", Toast.LENGTH_SHORT).show();
                 }
-                else
-                    {
-                    Toast.makeText(getContext(), "Not valid", Toast.LENGTH_SHORT).show();
-                    }
-            }
         });
         shareBtn.setOnClickListener(view -> shareImage(url));
         return v;
@@ -138,8 +122,6 @@ public class PhotoFragment extends Fragment {
             @Override public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 Intent i = new Intent(Intent.ACTION_SEND);
                 i.setType("image/*");
-//                BitmapDrawable drawable = (BitmapDrawable) zoomageView.getDrawable();
-//                Bitmap bitmap1 = drawable.getBitmap();
                 Bitmap bitmap1=((BitmapDrawable)zoomageView.getDrawable()).getBitmap();
                 i.putExtra(Intent.EXTRA_STREAM, getLocalBitmapUri(bitmap1));
                 startActivity(Intent.createChooser(i, "Share Image"));
@@ -227,8 +209,6 @@ public class PhotoFragment extends Fragment {
         protected Void doInBackground(String... strings)
         {
             Bitmap bitmapz=getbitmap();
-//            bitmap1=BitmapFactory.decodeResource(context.getResources(),
-//                    zoomageView.getDrawable());
             if (bitmapz==null)
             {
                 //Log.d("bitmap", "doInBackground: Bitmap still null");
